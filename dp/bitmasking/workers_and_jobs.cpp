@@ -78,3 +78,20 @@ int solve(int i, int mask) {
 
   return dp[i][mask] = ans;
 }
+
+signed main() {
+  memset(dp, -1, sizeof dp);
+  int t=1;
+  while(t--) {
+      cin>>N;
+
+      for(int i=0; i<N; i++) {
+        for(int j=0; j<N; j++) {
+          cin>>cost[i][j];
+        }
+      }
+
+    cout<<solve(0, (1<<N)-1);
+  }
+  return 0;
+}
