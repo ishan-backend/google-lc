@@ -25,3 +25,35 @@ Thought process to store a subset:
       int subset1 = (0000000000000...10110)base2 = 22
 */
 
+/*
+Given a set represented as bitmask, create functions:
+1. Add an element to set
+2. Remove an element from set
+3. Display elements in the set
+*/
+
+void display(int subset) {
+  for(int bit_no=0; bit_no<10; bit_no++) {
+    if(subset & (1<<bit_no) != 0) { // 0000000011 & 0000000010 = 0000000010 which means 1st bit is set i.e. [1..N] universal set me 2 is present in this subset
+      cout<<bit_no+1<<" is present" << endl;
+    }
+  }
+}
+
+void remove(int subset, int num) {
+  // subset binary = 0000000111, has natural numbers {1, 2, 3}
+  // remove 2 -> do a XOR with 0000000010
+  // XOR opn: 0 XOR 0 = 0, 0 XOR 1 = 1, 1 XOR 1 = 0
+
+  // check if num is in subset
+  subset = subset ^ (1<<(num-1)); // num is represented by num-1th bit
+}
+
+int main() {
+  int ss = 10;
+  display(ss);
+
+  
+  return 0;
+}
+
