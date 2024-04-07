@@ -22,6 +22,6 @@ Thought process to store a subset:
       If N=32, we know Integer has 32 bits so it can represent a subset.
 
       e.g. for subset s1 = {2, 3, 5} and if our original set had [1, N] range where N <= 32
-      int subset1 = (0000000000000...10110)base2
+      int subset1 = (0000000000000...10110)base2 = 22
 */
 
