@@ -49,6 +49,10 @@ void remove(int subset, int num) {
   subset = subset ^ (1<<(num-1)); // num is represented by num-1th bit
 }
 
+void add(int subset, int num) {
+  subset = subset ^ (1<<(num-1)); // same XOR opn can be used to add num as well to the subset
+}
+
 int main() {
   int ss = 10;
   display(ss);
