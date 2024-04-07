@@ -37,8 +37,22 @@ int query(int node, int st, int en, int l, int r) { // [l, r]  are of query and 
     return max(q1, q2);
 }
 
-void update(int node, int st, int en, int l, int r) {
-  
+void update(int node, int st, int en, int int idx, int val) {
+      if(st == en) {
+          arr[st] = val;
+          st[st] = val;
+          return;
+      }
+
+    // recurse
+    int mid = (st+en)/2;
+    if(idx <= mid)
+        update(2*node, st, mid, idx, val);
+    else
+        update(2*node+1, mid+1, en, idx, val);
+    
+    // backtracking - update current node
+    st[node] = max(st[2*node], st[2*node+1]);
 }
 
 int main()
