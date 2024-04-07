@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5+2;
+const int N = 1e5+2, MOD_MAX = 1e9+7; // 10^9+7
 int arr[N];
 pair<int, int> st[4*N];
 
@@ -36,7 +36,7 @@ void build(int node, int st, int en) { // node 1 of st ;st, en is [0, n-1] index
 // cases: complete and partial overlap
 pair<int, int> query(int node, int st, int en, int l, int r) { // [l, r]  are of query and [st, en] is what is being taken care of by node
     if(st > r or en < l) {
-        return INT_MIN; // maximum of this range, out of bound so return minimum
+        return {MOD_MAX, -1}; // out of range case: minimum and its freq
     }
 
     // l st en r - full overlap
@@ -46,15 +46,22 @@ pair<int, int> query(int node, int st, int en, int l, int r) { // [l, r]  are of
 
     // st l en r || l st r en - partial overlap
     int mid = (st+en)/2;
-    int q1 = query(2*node, st, mid, l, r);
-    int q2 = query(2*node+1, mid+1, en, l, r);
-    return max(q1, q2);
+    pair<int, int> q1 = query(2*node, st, mid, l, r);
+    pair<int, int> q2 = query(2*node+1, mid+1, en, l, r);
+    if(q1.first < q2.first) {
+        return q1;
+    } else if(q2.first < q1.first) {
+        return q2;
+    } else {
+        return {q1.first, q1.second + q2.second};
+    }
 }
 
 void update(int node, int st, int en, int int idx, int val) {
       if(st == en) {
           arr[st] = val;
-          st[st] = val;
+          st[st].first = val;
+          st[st].second = 1;
           return;
       }
 
@@ -65,8 +72,17 @@ void update(int node, int st, int en, int int idx, int val) {
     else
         update(2*node+1, mid+1, en, idx, val);
     
-    // backtracking - update current node
-    st[node] = max(st[2*node], st[2*node+1]);
+    // backtracking - update current node, similar to the logic of build()
+    if(st[2*node].first < st[2*node+1].first) {
+        st[node].first = st[2*node].first; // smallest element
+        st[node].second = st[2*node].second; // freq
+    } else if(st[2*node+1].first < st[2*node].first) {
+        st[node].first = st[2*node+1].first;
+        st[node].second = st[2*node+1].second;
+    } else { // when both children minimum is same
+        st[node].first = st[2*node].first; // kisi ka bhi
+        st[node].second = (st[2*node].second + st[2*node+1].second);
+    }
 }
 
 int main()
