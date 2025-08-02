@@ -1,72 +1,73 @@
-class UnionFind {
-    vector<int> par;
-    int distComp;
-
-    public:
-    UnionFind(int n) {
-        distComp = n;
-        // par.resize(n+1);
-        for(int i=0; i<=n; i++) { // 1 based indexing
-            par.push_back(i);
-        }
+class DSU {
+public:
+    vector<int> parent;
+    DSU(int n) {
+        parent.resize(n + 1);
+        iota(parent.begin(), parent.end(), 0); // parent[i] = i
     }
 
-    int findPar(int x) {
-        if(par[x] != x) {
-            par[x] = findPar(par[x]);
+    int find(int u) {
+        if (u != parent[u]) {
+            parent[u] = find(parent[u]); // path compression
         }
-
-        return par[x]; // returns exact root
+        return parent[u];
     }
 
-    bool merge(int x, int y) {
-        if(findPar(x) == findPar(y)) {
-            return false;
-        }
-
-        par[findPar(x)] = y;
-        distComp--;
+    // returns true if union is successful (i.e., they were in different sets)
+    bool unite(int u, int v) {
+        int pu = find(u);
+        int pv = find(v);
+        if (pu == pv) return false;
+        parent[pu] = pv;
         return true;
     }
 
-    bool singleComponent() {
-        return distComp == 1;
+    // Count number of unique parents = number of components
+    int countComponents(int n) {
+        unordered_set<int> comps;
+        for (int i = 1; i <= n; i++) {
+            comps.insert(find(i));
+        }
+        return comps.size();
     }
 };
-
 
 class Solution {
 public:
     int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
-        // priortise the 3 marked edges first
-        sort(edges.begin(), edges.end(), [](vector<int> &a, vector<int> &b) {return a[0] > b[0];});
+        DSU dsuA(n), dsuB(n);
+        int usedEdges = 0;
 
-
-        UnionFind alice(n), bob(n);
-
-        // max number of edges to remove = Sum (UF Alice and Bob) total edges - minimum edges that make whole graph connected for each union find
-        // if either graph fails to do that, we return -1
-
-        int edgesAdded = 0;
-        for(auto &e: edges) {
-            int typ = e[0];
-            int from = e[1];
-            int to = e[2];
-            switch(typ) {
-                case 3:
-                    // you want to add this edge if it connects
-                    // either of the graphs
-                    edgesAdded += alice.merge(from, to) | bob.merge(from, to);
-                    break;
-                case 2:
-                    edgesAdded += bob.merge(from, to);
-                    break;
-                case 1:
-                    edgesAdded += alice.merge(from, to);
-                    break;
+        // Type 3 (shared) edges first
+        for (auto& edge : edges) {
+            if (edge[0] == 3) {
+                int u = edge[1], v = edge[2];
+                bool a = dsuA.unite(u, v);
+                bool b = dsuB.unite(u, v);
+                if (a | b) usedEdges++; // edge connects at least one graph
             }
         }
 
-                    return (alice.singleComponent() and bob.singleComponent()) ? edges.size() - edgesAdded : -1;
+        // Type 1 (Alice only)
+        for (auto& edge : edges) {
+            if (edge[0] == 1) {
+                int u = edge[1], v = edge[2];
+                if (dsuA.unite(u, v)) usedEdges++;
+            }
+        }
+
+        // Type 2 (Bob only)
+        for (auto& edge : edges) {
+            if (edge[0] == 2) {
+                int u = edge[1], v = edge[2];
+                if (dsuB.unite(u, v)) usedEdges++;
+            }
+        }
+
+        // Final check: both graphs must be fully connected (1 component)
+        if (dsuA.countComponents(n) > 1 || dsuB.countComponents(n) > 1)
+            return -1;
+
+        return edges.size() - usedEdges;
     }
 };
