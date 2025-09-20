@@ -25,7 +25,7 @@ public:
             
             auto &timestamps = destToTs[b];
             auto it = lower_bound(timestamps.begin(), timestamps.end(), c);
-            if (it != timestamps.end() && *it == c) {
+            if (it != timestamps.end()) {
                 timestamps.erase(it);
             }
         }
@@ -50,7 +50,7 @@ public:
 
         auto &timestamps = destToTs[b];
         auto it = lower_bound(timestamps.begin(), timestamps.end(), c);
-        if (it != timestamps.end() && *it == c) {
+        if (it != timestamps.end()) {
             timestamps.erase(it);
         }
 
