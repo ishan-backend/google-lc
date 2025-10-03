@@ -1,28 +1,29 @@
 class Solution {
 public:
     string convert(string s, int numRows) {
-        if(numRows == 1)return s;
-        int n = s.length();
+        if(numRows == 1 or numRows > s.size())
+            return s;
 
-        int noOfChar = 2 * numRows - 2;
-        string ans = "";
-        
-        for(int row = 0; row < numRows; row++){
-            int index = row;
+        int c = 0, d = 1;
+        vector<vector<char>> rows(numRows); // save into this
+        for(char ch: s) {
+            rows[c].push_back(ch);
+            if(c == 0) {
+                d = 1;
+            } else if(c == numRows-1) {
+                d = -1;
+            }
 
-            while(index < n){
-                ans += s[index];
+            c += d; // move up or down
+        }
 
-                if(row != 0 and row != numRows-1){
-                    int second = index + noOfChar - 2 * row;
-                    if(second < n){
-                        ans += s[second];
-                    }
-                }
-                index += noOfChar;
+        string res = "";
+        for(auto r : rows) {
+            for(char c: r) {
+                res += c;
             }
         }
 
-        return ans;
+        return res;
     }
 };
