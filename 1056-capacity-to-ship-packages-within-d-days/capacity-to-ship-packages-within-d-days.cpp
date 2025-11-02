@@ -1,38 +1,37 @@
 class Solution {
 public:
+    // Check whether the packages can be shipped in less than "days" days with
+    // "c" capacity.
+    bool feasible(vector<int>& weights, int c, int days) {
+        int daysNeeded = 1, currentLoad = 0;
+        for (int weight : weights) {
+            currentLoad += weight;
+            if (currentLoad > c) {
+                daysNeeded++;
+                currentLoad = weight;
+            }
+        }
+
+        return daysNeeded <= days;
+    }
 
     int shipWithinDays(vector<int>& weights, int days) {
-        const int inf = 5e7;
-        int lo = 0, hi = inf;
-        for(auto w: weights) {
-            lo = max(lo, w);
+        int totalLoad = 0, maxLoad = 0;
+        for (int weight : weights) {
+            totalLoad += weight;
+            maxLoad = max(maxLoad, weight);
         }
 
-        while(lo < hi) {
-            int mid = lo + (hi-lo)/2;
+        int l = maxLoad, r = totalLoad;
 
-            // assume mid is maxm weight carried by ship each day
-            // check if in days/tri[s], all weight can be taken
-            // if yes this may be answer, check for lower range
-            // else check in higher range
-            int curw = 0;
-            int needs = 1;
-            for(auto w: weights) {
-                if(curw+w > mid) {
-                    needs++;
-                    curw = 0;
-                }
-
-                curw += w;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (feasible(weights, mid, days)) {
+                r = mid;
+            } else {
+                l = mid + 1;
             }
-
-            // if on carrying mid weight, total trips > D -> increase the weight carrying cap
-            if(needs > days)
-                lo = mid+1;
-            else
-                hi = mid;
         }
-
-        return lo;
+        return l;
     }
 };
